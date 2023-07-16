@@ -1,0 +1,51 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
+
+class PharmaSense:
+    def __init__(self):
+        # Load and preprocess the drug discovery dataset
+        self.dataset = pd.read_csv('path_to_dataset.csv')
+        self.X = self.dataset.drop(columns=['Activity'])
+        self.y = self.dataset['Activity']
+
+        # Split the dataset into training and testing sets
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.X, self.y, test_size=0.2, random_state=42)
+
+        # Initialize the machine learning model
+        self.model = RandomForestRegressor()
+
+    def train_model(self):
+        # Train the machine learning model
+        self.model.fit(self.X_train, self.y_train)
+
+    def evaluate_model(self):
+        # Evaluate the model performance on the test set
+        predictions = self.model.predict(self.X_test)
+        mse = mean_squared_error(self.y_test, predictions)
+
+        return mse
+
+    def predict_activity(self, new_compound):
+        # Make predictions on a new compound
+        new_compound = np.array(new_compound).reshape(1, -1)
+        predicted_activity = self.model.predict(new_compound)
+
+        return predicted_activity
+
+# Usage example
+pharmasense = PharmaSense()
+
+# Train the machine learning model
+pharmasense.train_model()
+
+# Evaluate the model performance
+mse = pharmasense.evaluate_model()
+print("Mean Squared Error:", mse)
+
+# Predict the activity for a new compound
+new_compound = [0.5, 1.2, 0.8, 0.9]  # Example features of a new compound
+predicted_activity = pharmasense.predict_activity(new_compound)
+print("Predicted Activity:", predicted_activity)
